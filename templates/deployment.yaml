@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.Name }}-web
+spec:
+  selector:
+    matchLabels:
+      {{- toYaml .Values.matchLabels| nindent 6 }}
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        {{- toYaml .Values.labels| nindent 8 }}
+    spec:
+      containers:
+        - envFrom:
+          - configMapRef:
+              name: {{ .Values.Name }}-variables
+              optional: false
+          name: {{ .Values.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

@@ -1,0 +1,50 @@
+replicaCount: 3
+namespace: jumia_phone_validator
+Name: validator-frontend
+
+image:
+  repository: add_your_ecr_repo
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+resources: 
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+labels:
+  app.kubernetes.io/name: validator-frontend
+ 
+matchLabels:
+  app.kubernetes.io/name: validator-frontend
+  
+selector:
+  app.kubernetes.io/name: validator-frontend
+
+imagePullSecrets: []
+
+podAnnotations: {}
+
+service:
+  type: LoadBalancer
+  targetPort: 8081
+  port: 80
+
+annotations:
+  service.beta.kubernetes.io/aws-load-balancer-type: external
+  service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 9
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+configs:
+  REACT_APP_BACKEND_URL: http://validator-backend-svc:80/
+  PORT: 80

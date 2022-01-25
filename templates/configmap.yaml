@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.Name }}-variables
+  namespace: {{ .Values.namespace }}
+data:
+  {{- toYaml .Values.configs| nindent 2 }}
